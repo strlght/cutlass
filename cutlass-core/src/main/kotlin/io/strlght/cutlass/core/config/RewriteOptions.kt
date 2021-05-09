@@ -26,7 +26,7 @@ sealed class RewriteOptions {
             val dir = directory
                 ?: Paths.get(fileName, "cutlass")
             val output = dir.resolve(fileName)
-            Files.createDirectories(output)
+            Files.createDirectories(output.parent)
             return FileDataStore(output.toFile())
         }
     }
