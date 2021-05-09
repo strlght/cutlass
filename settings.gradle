@@ -1,0 +1,11 @@
+enableFeaturePreview('TYPESAFE_PROJECT_ACCESSORS')
+enableFeaturePreview('VERSION_CATALOGS')
+
+include ':cutlass-analyzers'
+include ':cutlass-api'
+include ':cutlass-cli'
+include ':cutlass-core'
+include ':cutlass-gradle-plugin'
+include ':cutlass-report-txt'
+include ':cutlass-test'
+include ':cutlass-utils'

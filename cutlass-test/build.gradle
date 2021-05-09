@@ -1,0 +1,5 @@
+dependencies {
+    implementation projects.cutlassApi
+    implementation projects.cutlassReportTxt
+    implementation libs.assertk
+}

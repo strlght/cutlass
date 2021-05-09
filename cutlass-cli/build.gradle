@@ -1,0 +1,76 @@
+import proguard.gradle.ProGuardTask
+
+buildscript {
+    dependencies {
+        classpath libs.proguard
+    }
+}
+
+plugins {
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'application'
+}
+
+application {
+    mainClassName = 'io.strlght.cutlass.cli.Main'
+}
+
+shadowJar {
+    mergeServiceFiles()
+    exclude '**/*.kotlin_builtins'
+    exclude '**/*.kotlin_metadata'
+    exclude '**/*.kotlin_module'
+    exclude 'META-INF/maven/**'
+    exclude 'META-INF/proguard/**'
+
+    manifest {
+        attributes 'Main-Class': 'io.strlght.cutlass.cli.Main'
+        attributes 'Implementation-Version': project.version
+    }
+}
+
+task minimizedJar(type: ProGuardTask, dependsOn: shadowJar) {
+    injars shadowJar.archiveFile
+    outjars shadowJar.destinationDirectory.file("cutlass-minimized.jar")
+    libraryjars System.properties.'java.home' + "/jmods"
+    printmapping shadowJar.destinationDirectory.file("proguard-mapping.txt")
+
+    dontoptimize
+    allowaccessmodification
+    keepattributes 'SourceFile'
+    keepattributes 'LineNumberTable'
+    keepattributes '*Annotation*'
+    flattenpackagehierarchy
+    repackageclasses
+
+    def keepClasses = [
+            'io.strlght.cutlass.cli.Main',
+            'io.strlght.cutlass.api.**',
+            'io.strlght.cutlass.analyzers.provider.CoreAnalyzersProvider',
+    ]
+
+    def keepNamesClasses = [
+            'io.strlght.cutlass.analyzers.**',
+    ]
+
+    for (keepClass in keepClasses) {
+        keep access: 'public', name: keepClass, {
+            method access: 'public'
+            method access: 'private'
+        }
+    }
+
+    for (keepName in keepNamesClasses) {
+        keepnames access: 'public', name: keepName
+    }
+
+    keepclassmembers 'enum * { public static **[] values(); public static ** valueOf(java.lang.String); }'
+}
+
+dependencies {
+    implementation libs.kotlin.stdlib
+    implementation projects.cutlassApi
+    implementation projects.cutlassCore
+    implementation projects.cutlassReportTxt
+    implementation libs.clikt
+}

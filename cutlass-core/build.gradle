@@ -1,0 +1,6 @@
+dependencies {
+    implementation projects.cutlassApi
+    implementation projects.cutlassAnalyzers
+    implementation projects.cutlassReportTxt
+}
+

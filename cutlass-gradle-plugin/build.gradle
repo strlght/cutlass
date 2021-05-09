@@ -1,0 +1,28 @@
+plugins {
+    id 'java-gradle-plugin'
+}
+
+repositories {
+    mavenCentral()
+    google()
+    jcenter {
+        content {
+            includeModule('org.jetbrains.trove4j', 'trove4j')
+        }
+    }
+}
+
+gradlePlugin {
+    automatedPublishing = false
+    plugins {
+        cutlassPlugin {
+            id = 'io.strlght.cutlass'
+            implementationClass = 'io.strlght.cutlass.gradle.CutlassPlugin'
+        }
+    }
+}
+
+dependencies {
+    compileOnly gradleApi()
+    compileOnly libs.gradle.android
+}
