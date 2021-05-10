@@ -106,7 +106,7 @@ class FieldNamesMetadataProcessorTest {
             cls,
             km,
             mapping = """
-                KmFieldssingleUnknownType -> KmFieldssingleUnknownType:
+                KmFieldsSingleUnknownType -> KmFieldsSingleUnknownType:
                     sample.a a -> model
                 sample.a -> sample.Model:
             """.trimIndent()

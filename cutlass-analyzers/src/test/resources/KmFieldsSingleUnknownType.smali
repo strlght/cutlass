@@ -1,4 +1,4 @@
-.class public final LKmFieldssingleUnknownType;
+.class public final LKmFieldsSingleUnknownType;
 .super Ljava/lang/Object;
 
 
