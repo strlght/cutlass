@@ -5,7 +5,7 @@ import io.strlght.cutlass.test.assert
 import io.strlght.cutlass.test.toSmaliClassDef
 import org.junit.Test
 
-class IntrinsicsAnalyzerTest {
+class IntrinsicsParametersAnalyzerTest {
     private val intrinsicsClassDef = """
         .class public Lkotlin/jvm/internal/k;
         .super Ljava/lang/Object;
@@ -145,7 +145,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = "IntrinsicsBasic -> IntrinsicsBasic:"
@@ -169,7 +169,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
