@@ -31,8 +31,8 @@ fun Analyzer.assert(vararg classes: String, mapping: String) =
         .let { assert(*it, mapping = mapping) }
 
 fun Analyzer.assert(vararg classes: ClassDef, mapping: String) {
-    val classPool = DefaultTypeMapping()
+    val typeMapping = DefaultTypeMapping()
     runPipeline(*classes)
-        .forEach { classPool.process(it) }
-    assertThat(MappingReport().render(classPool)).isEqualTo(mapping)
+        .forEach { typeMapping.process(it) }
+    assertThat(MappingReport().render(typeMapping)).isEqualTo(mapping)
 }
