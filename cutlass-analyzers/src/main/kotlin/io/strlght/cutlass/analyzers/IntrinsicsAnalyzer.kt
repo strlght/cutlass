@@ -72,13 +72,12 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
             }
             val invokeInstruction = instruction as? Instruction35c ?: return@forEachIndexed
             val reference = instruction.reference as? MethodReference ?: return@forEachIndexed
-            if (Pair(reference.definingClass, reference.name) !in candidates ||
-                reference.returnType != EXPECTED_RETURN_TYPE ||
-                reference.parameterTypes != EXPECTED_PARAMETER_TYPES
+            if (Pair(reference.definingClass, reference.name) in candidates &&
+                reference.returnType == EXPECTED_RETURN_TYPE &&
+                reference.parameterTypes == EXPECTED_PARAMETER_TYPES
             ) {
-                return@forEachIndexed
+                process(instructions, index, invokeInstruction)
             }
-            process(instructions, index, invokeInstruction)
         }
     }
 
@@ -96,7 +95,7 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         ) {
             return
         }
-        val valueInstruction = backtrackInstruction(intrinsicIndex, instructions, valueRegister) ?: return
+        val valueInstruction = backtrackValueInstruction(intrinsicIndex, instructions, valueRegister) ?: return
         processResult(stringValue, valueInstruction)
     }
 
@@ -107,13 +106,13 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         val reference = valueInstruction.reference
         val entityName = result.groups[1]?.value?.dropLast(1)
         val methodName = result.groups[2]?.value ?: return
+
         @Suppress("MagicNumber")
         val isFunction = result.groups[5] != null
-        if (entityName == null && !isFunction) {
-            return
+        if (entityName != null || isFunction) {
+            reportFieldFinding(reference, methodName)
+            reportMethodFindings(reference, valueInstruction, entityName, isFunction, methodName)
         }
-        reportFieldFinding(reference, methodName)
-        reportMethodFindings(reference, valueInstruction, entityName, isFunction, methodName)
     }
 
     private fun reportMethodFindings(
@@ -131,22 +130,25 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
                     context.report(Finding.ClassName(type, type.replaceClassName(entityName)))
                 }
             }
-            val reportedName = buildString {
-                if (!isFunction) {
-                    append("get")
-                    val name = methodName.replaceFirstChar {
-                        if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
-                    }
-                    append(name)
-                } else {
-                    append(methodName)
-                }
-            }
+            val reportedName = convertToFunctionName(isFunction, methodName)
             if (reportedName != reference.name) {
                 context.report(Finding.MethodName(reference.toCutlassModel(), methodName))
             }
         }
     }
+
+    private fun convertToFunctionName(isFunction: Boolean, baseName: String) =
+        buildString {
+            if (!isFunction) {
+                append("get")
+                val name = baseName.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString()
+                }
+                append(name)
+            } else {
+                append(baseName)
+            }
+        }
 
     private fun reportFieldFinding(reference: Reference, methodName: String) {
         if (reference is FieldReference) {
@@ -156,7 +158,7 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         }
     }
 
-    private fun backtrackInstruction(
+    private fun backtrackValueInstruction(
         intrinsicIndex: Int,
         instructions: List<Instruction>,
         valueRegister: Int
