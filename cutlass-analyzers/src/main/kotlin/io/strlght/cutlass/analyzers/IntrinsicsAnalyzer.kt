@@ -13,16 +13,17 @@ import org.jf.dexlib2.ReferenceType
 import org.jf.dexlib2.iface.ClassDef
 import org.jf.dexlib2.iface.Method
 import org.jf.dexlib2.iface.instruction.Instruction
+import org.jf.dexlib2.iface.instruction.OneRegisterInstruction
 import org.jf.dexlib2.iface.instruction.ReferenceInstruction
 import org.jf.dexlib2.iface.instruction.formats.Instruction11x
 import org.jf.dexlib2.iface.instruction.formats.Instruction12x
 import org.jf.dexlib2.iface.instruction.formats.Instruction21c
-import org.jf.dexlib2.iface.instruction.formats.Instruction22c
 import org.jf.dexlib2.iface.instruction.formats.Instruction35c
 import org.jf.dexlib2.iface.reference.FieldReference
 import org.jf.dexlib2.iface.reference.MethodReference
 import org.jf.dexlib2.iface.reference.Reference
 import org.jf.dexlib2.iface.reference.StringReference
+import java.util.EnumSet
 import java.util.Locale
 
 class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
@@ -142,7 +143,10 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
     ) {
         val isStatic = valueInstruction.opcode == Opcode.INVOKE_STATIC ||
             valueInstruction.opcode == Opcode.SGET_OBJECT
-        if (isStatic && entityName != "it" && entityName != null) {
+        if (isStatic &&
+            entityName != null &&
+            entityName !in INVALID_ENTITY_NAMES
+        ) {
             val definingType = valueInstruction.definingType ?: return
             val type = Type(definingType)
             if (type.simpleName != entityName) {
@@ -165,10 +169,8 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         }
 
     private fun reportFieldFinding(reference: Reference, methodName: String) {
-        if (reference is FieldReference) {
-            if (reference.name != methodName) {
-                context.report(Finding.FieldName(reference.toCutlassModel(), methodName))
-            }
+        if (reference is FieldReference && reference.name != methodName) {
+            context.report(Finding.FieldName(reference.toCutlassModel(), methodName))
         }
     }
 
@@ -178,9 +180,9 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         valueRegister: Int
     ): ReferenceInstruction? {
         var register = valueRegister
-        for (index in intrinsicIndex.downTo(0)) {
+        for (index in intrinsicIndex downTo 0) {
             val instruction = instructions[index]
-            if ((instruction.opcode == Opcode.MOVE_RESULT_OBJECT) &&
+            if (instruction.opcode == Opcode.MOVE_RESULT_OBJECT &&
                 instruction is Instruction11x &&
                 instruction.registerA == register
             ) {
@@ -190,16 +192,11 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
                 instruction.registerA == register
             ) {
                 register = instruction.registerB
-            } else if (instruction.opcode == Opcode.IGET_OBJECT &&
-                instruction is Instruction22c &&
+            } else if (instruction.opcode in OBJECT_OPCODES &&
+                instruction is OneRegisterInstruction &&
                 instruction.registerA == register
             ) {
-                return instruction
-            } else if (instruction.opcode == Opcode.SGET_OBJECT &&
-                instruction is Instruction21c &&
-                instruction.registerA == register
-            ) {
-                return instruction
+                return instruction as ReferenceInstruction
             }
         }
         return null
@@ -243,5 +240,8 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
             "Ljava/lang/String;"
         )
         private const val EXPECTED_RETURN_TYPE = "V"
+
+        private val OBJECT_OPCODES = EnumSet.of(Opcode.IGET_OBJECT, Opcode.SGET_OBJECT)
+        private val INVALID_ENTITY_NAMES = setOf("this", "it")
     }
 }
