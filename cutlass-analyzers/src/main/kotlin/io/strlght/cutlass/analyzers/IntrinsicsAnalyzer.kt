@@ -10,6 +10,7 @@ import io.strlght.cutlass.api.types.Type
 import io.strlght.cutlass.utils.ext.cast
 import org.jf.dexlib2.AccessFlags
 import org.jf.dexlib2.Opcode
+import org.jf.dexlib2.ReferenceType
 import org.jf.dexlib2.iface.ClassDef
 import org.jf.dexlib2.iface.Method
 import org.jf.dexlib2.iface.instruction.Instruction
@@ -110,29 +111,36 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         @Suppress("MagicNumber")
         val isFunction = result.groups[5] != null
         if (entityName != null || isFunction) {
+            reportTypeFinding(valueInstruction, entityName)
             reportFieldFinding(reference, methodName)
-            reportMethodFindings(reference, valueInstruction, entityName, isFunction, methodName)
+            reportMethodFinding(reference, isFunction, methodName)
         }
     }
 
-    private fun reportMethodFindings(
+    private fun reportMethodFinding(
         reference: Reference,
-        valueInstruction: ReferenceInstruction,
-        entityName: String?,
         isFunction: Boolean,
-        methodName: String
+        methodName: String,
     ) {
         if (reference is MethodReference) {
-            val isStatic = valueInstruction.opcode == Opcode.INVOKE_STATIC
-            if (isStatic && entityName != "it" && entityName != null) {
-                val type = Type(reference.definingClass)
-                if (type.simpleName != entityName) {
-                    context.report(Finding.ClassName(type, type.replaceClassName(entityName)))
-                }
-            }
             val reportedName = convertToFunctionName(isFunction, methodName)
             if (reportedName != reference.name) {
                 context.report(Finding.MethodName(reference.toCutlassModel(), methodName))
+            }
+        }
+    }
+
+    private fun reportTypeFinding(
+        valueInstruction: ReferenceInstruction,
+        entityName: String?,
+    ) {
+        val isStatic = valueInstruction.opcode == Opcode.INVOKE_STATIC ||
+            valueInstruction.opcode == Opcode.SGET_OBJECT
+        if (isStatic && entityName != "it" && entityName != null) {
+            val definingType = valueInstruction.definingType ?: return
+            val type = Type(definingType)
+            if (type.simpleName != entityName) {
+                context.report(Finding.ClassName(type, type.replaceClassName(entityName)))
             }
         }
     }
@@ -181,6 +189,11 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
                 instruction.registerA == register
             ) {
                 return instruction
+            } else if (instruction.opcode == Opcode.SGET_OBJECT &&
+                instruction is Instruction21c &&
+                instruction.registerA == register
+            ) {
+                return instruction
             }
         }
         return null
@@ -204,6 +217,19 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         }
         return null
     }
+
+    private val ReferenceInstruction.definingType: String?
+        get() = when (referenceType) {
+            ReferenceType.FIELD -> {
+                reference.cast<FieldReference>().definingClass
+            }
+            ReferenceType.METHOD -> {
+                reference.cast<MethodReference>().definingClass
+            }
+            else -> {
+                null
+            }
+        }
 
     companion object {
         private val EXPECTED_PARAMETER_TYPES = listOf(
