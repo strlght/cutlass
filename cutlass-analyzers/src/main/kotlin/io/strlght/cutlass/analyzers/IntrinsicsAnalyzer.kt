@@ -4,7 +4,6 @@ import io.strlght.cutlass.analyzers.ext.accessAll
 import io.strlght.cutlass.api.Analyzer
 import io.strlght.cutlass.api.AnalyzerContext
 import io.strlght.cutlass.api.Finding
-import io.strlght.cutlass.api.annotations.ExperimentalAnalyzer
 import io.strlght.cutlass.api.ext.toCutlassModel
 import io.strlght.cutlass.api.types.Type
 import io.strlght.cutlass.utils.ext.cast
@@ -26,7 +25,6 @@ import org.jf.dexlib2.iface.reference.Reference
 import org.jf.dexlib2.iface.reference.StringReference
 import java.util.Locale
 
-@ExperimentalAnalyzer
 class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
     private val intrinsicRegex by lazy {
         "^([a-zA-Z_][a-zA-Z0-9_]+\\.)?([a-zA-Z_][a-zA-Z0-9_]+)(!!)?(<[a-zA-Z_][a-zA-Z0-9_]+>)?(\\([^)]*\\))?$".toRegex()
@@ -105,6 +103,14 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
             stringValue
         ) ?: return
         val reference = valueInstruction.reference
+
+        val isLibraryClass = valueInstruction.definingType
+            ?.let { context.isLibraryType(Type(it)) }
+            ?: false
+        if (isLibraryClass) {
+            return
+        }
+
         val entityName = result.groups[1]?.value?.dropLast(1)
         val methodName = result.groups[2]?.value ?: return
 
