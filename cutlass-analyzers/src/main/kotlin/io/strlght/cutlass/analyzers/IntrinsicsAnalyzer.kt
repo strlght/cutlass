@@ -28,7 +28,7 @@ import java.util.Locale
 
 class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
     private val intrinsicRegex by lazy {
-        "^([a-zA-Z_][a-zA-Z0-9_]+\\.)?([a-zA-Z_][a-zA-Z0-9_]+)(!!)?(<[a-zA-Z_][a-zA-Z0-9_]+>)?(\\([^)]*\\))?$".toRegex()
+        "^([a-zA-Z_][a-zA-Z0-9_]+(\\[\\d+])?\\.)?([a-zA-Z_][a-zA-Z0-9_]+)(!!)?(<[a-zA-Z_][a-zA-Z0-9_]+>)?(\\([^)]*\\))?$".toRegex()
     }
     private val candidates = mutableSetOf<Pair<String, String>>()
 
@@ -99,6 +99,7 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         processResult(stringValue, valueInstruction)
     }
 
+    @Suppress("MagicNumber")
     private fun processResult(stringValue: String, valueInstruction: ReferenceInstruction) {
         val result = intrinsicRegex.matchEntire(
             stringValue
@@ -113,12 +114,14 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         }
 
         val entityName = result.groups[1]?.value?.dropLast(1)
-        val methodName = result.groups[2]?.value ?: return
+        val methodName = result.groups[3]?.value ?: return
 
-        @Suppress("MagicNumber")
-        val isFunction = result.groups[5] != null
+        val isArray = result.groups[2] != null
+        val isFunction = result.groups[6] != null
         if (entityName != null || isFunction) {
-            reportTypeFinding(valueInstruction, entityName)
+            if (!isArray) {
+                reportTypeFinding(valueInstruction, entityName)
+            }
             reportFieldFinding(reference, methodName)
             reportMethodFinding(reference, isFunction, methodName)
         }
