@@ -11,7 +11,6 @@ class IntrinsicsAnalyzerTest {
         .super Ljava/lang/Object;
         .source "Intrinsics.java"
 
-        # direct methods
         .method private constructor <init>()V
             .registers 1
             .line 1
@@ -19,153 +18,116 @@ class IntrinsicsAnalyzerTest {
             return-void
         .end method
         
-        .method public static e(Ljava/lang/Object;Ljava/lang/String;)V
-            .registers 2
+        .method public static a(Ljava/lang/Object;Ljava/lang/String;)V
+            .registers 3
             if-eqz p0, :cond_3
             return-void
-            .line 1
+            .line 2
             :cond_3
-            invoke-static {p1}, Lkotlin/jvm/internal/k;->k(Ljava/lang/String;)V
-            const/4 p0, 0x0
-            throw p0
-        .end method
-
-
-        .method private static g(Ljava/lang/Throwable;)Ljava/lang/Throwable;
-            .registers 2
-            .annotation system Ldalvik/annotation/Signature;
-                value = {
-                    "<T:",
-                    "Ljava/lang/Throwable;",
-                    ">(TT;)TT;"
-                }
-            .end annotation
-            .line 1
-            const-class v0, Lkotlin/jvm/internal/k;
-            invoke-virtual {v0}, Ljava/lang/Class;->getName()Ljava/lang/String;
-            move-result-object v0
-            invoke-static {p0, v0}, Lkotlin/jvm/internal/k;->h(Ljava/lang/Throwable;Ljava/lang/String;)Ljava/lang/Throwable;
-            return-object p0
-        .end method
-
-        .method static h(Ljava/lang/Throwable;Ljava/lang/String;)Ljava/lang/Throwable;
-            .registers 7
-            .annotation system Ldalvik/annotation/Signature;
-                value = {
-                    "<T:",
-                    "Ljava/lang/Throwable;",
-                    ">(TT;",
-                    "Ljava/lang/String;",
-                    ")TT;"
-                }
-            .end annotation
-            .line 1
-            invoke-virtual {p0}, Ljava/lang/Throwable;->getStackTrace()[Ljava/lang/StackTraceElement;
-            move-result-object v0
-            .line 2
-            array-length v1, v0
-            const/4 v2, -0x1
-            const/4 v3, 0x0
-            :goto_7
-            if-ge v3, v1, :cond_19
-            .line 3
-            aget-object v4, v0, v3
-            invoke-virtual {v4}, Ljava/lang/StackTraceElement;->getClassName()Ljava/lang/String;
-            move-result-object v4
-            invoke-virtual {p1, v4}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-            move-result v4
-            if-eqz v4, :cond_16
-            move v2, v3
-            :cond_16
-            add-int/lit8 v3, v3, 0x1
-            goto :goto_7
-            :cond_19
-            add-int/lit8 v2, v2, 0x1
-            .line 4
-            invoke-static {v0, v2, v1}, Ljava/util/Arrays;->copyOfRange([Ljava/lang/Object;II)[Ljava/lang/Object;
+            new-instance p0, Ljava/lang/IllegalStateException;
+            new-instance v0, Ljava/lang/StringBuilder;
+            invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
+            invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            const-string p1, " must not be null"
+            invoke-virtual {v0, p1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+            invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
             move-result-object p1
-            check-cast p1, [Ljava/lang/StackTraceElement;
-            .line 5
-            invoke-virtual {p0, p1}, Ljava/lang/Throwable;->setStackTrace([Ljava/lang/StackTraceElement;)V
-            return-object p0
-        .end method
-
-        .method private static k(Ljava/lang/String;)V
-            .registers 6
-            .line 1
-            invoke-static {}, Ljava/lang/Thread;->currentThread()Ljava/lang/Thread;
-            move-result-object v0
-            invoke-virtual {v0}, Ljava/lang/Thread;->getStackTrace()[Ljava/lang/StackTraceElement;
-            move-result-object v0
-            const/4 v1, 0x3
-            .line 2
-            aget-object v0, v0, v1
-            .line 3
-            invoke-virtual {v0}, Ljava/lang/StackTraceElement;->getClassName()Ljava/lang/String;
-            move-result-object v1
-            .line 4
-            invoke-virtual {v0}, Ljava/lang/StackTraceElement;->getMethodName()Ljava/lang/String;
-            move-result-object v0
-            .line 5
-            new-instance v2, Ljava/lang/IllegalArgumentException;
-            new-instance v3, Ljava/lang/StringBuilder;
-            invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
-            const-string v4, "Parameter specified as non-null is null: method "
-            invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            const-string v1, "."
-            invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            const-string v0, ", parameter "
-            invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-            invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-            move-result-object p0
-            invoke-direct {v2, p0}, Ljava/lang/IllegalArgumentException;-><init>(Ljava/lang/String;)V
-            .line 6
-            invoke-static {v2}, Lkotlin/jvm/internal/k;->g(Ljava/lang/Throwable;)Ljava/lang/Throwable;
-            check-cast v2, Ljava/lang/IllegalArgumentException;
-            throw v2
+            invoke-direct {p0, p1}, Ljava/lang/IllegalStateException;-><init>(Ljava/lang/String;)V
+            invoke-static {p0}, Lkotlin/jvm/c/Intrinsics;->a(Ljava/lang/Throwable;)Ljava/lang/Throwable;
+            check-cast p0, Ljava/lang/IllegalStateException;
+            throw p0
         .end method
     """.trimIndent().toSmaliClassDef()
 
     @Test
-    fun basic() {
+    fun basicMethod() {
         val cls = """
-        .class public final LIntrinsicsBasic;
+        .class public final Lsample/a;
         .super Ljava/lang/Object;
 
-        # direct methods
-        .method public test(Landroid/content/Context;Ljava/lang/String;)V
-            .locals 1
-            const-string v0, "context"
-            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
-            const-string v0, "value"
-            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
+        .method public test(Lsample/b;)V
+            .locals 2
+            invoke-virtual {p0}, Lsample/b;->a()Lsample/c;
+            move-result-object v0
+            const-string v1, "Sample.test()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
         .end method
         """.trimIndent().toSmaliClassDef()
 
         IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
-            mapping = "IntrinsicsBasic -> IntrinsicsBasic:"
+            mapping = """
+                sample.b -> sample.b:
+                    sample.c a() -> test
+            """.trimIndent()
         )
     }
 
     @Test
-    fun workaround() {
+    fun basicField() {
         val cls = """
-        .class public final LIntrinsicsBasic;
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+        
+        .field private final a:Ljava/lang/Object;
+
+        .method public test()V
+            .locals 2
+            iget-object v0, p0, Lsample/a;->a:Ljava/lang/Object;
+            const-string v1, "sample.field"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.a -> sample.a:
+                    java.lang.Object a -> field
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun staticField() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+        
+        .field private static a:Ljava/lang/Object;
+
+        .method public test()V
+            .locals 2
+            sget-object v0, Lsample/a;->a:Ljava/lang/Object;
+            const-string v1, "Sample.field"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.a -> sample.Sample:
+                    java.lang.Object a -> field
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun chainedCall() {
+        val cls = """
+        .class public final Lsample/a;
         .super Ljava/lang/Object;
 
-        # direct methods
-        .method public test(Landroid/content/Context;Ljava/lang/String;)V
-            .locals 1
-            const-string v0, "test"
-            const-string v0, "context"
-            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
-            const-string v0, "value"
-            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
+        .method public test(Lsample/b;)V
+            .locals 2
+            invoke-virtual {p0}, Lsample/b;->a()Lsample/c;
+            move-result-object v0
+            const-string v1, "Sample.test1().test2()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
         .end method
         """.trimIndent().toSmaliClassDef()
 
@@ -173,6 +135,129 @@ class IntrinsicsAnalyzerTest {
             cls,
             intrinsicsClassDef,
             mapping = ""
+        )
+    }
+
+    @Test
+    fun staticMethodCall() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+
+        .method public test(Lsample/b;)V
+            .locals 2
+            invoke-static {}, Lsample/b;->a()Lsample/c;
+            move-result-object v0
+            const-string v1, "Sample.test()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.b -> sample.Sample:
+                    sample.c a() -> test
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun getter() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+
+        .method public test()V
+            .locals 2
+            invoke-virtual {p0}, Lsample/a;->a()Lsample/b;
+            move-result-object v0
+            const-string v1, "test"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = ""
+        )
+    }
+
+    @Test
+    fun withoutExplicitThis() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+
+        # direct methods
+        .method public test()V
+            .locals 2
+            invoke-virtual {p0}, Lsample/a;->a()Lsample/b;
+            move-result-object v0
+            const-string v1, "test()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.a -> sample.a:
+                    sample.b a() -> test
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun withExplicitThis() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+
+        .method public test()V
+            .locals 2
+            invoke-virtual {p0}, Lsample/a;->a()Lsample/b;
+            move-result-object v0
+            const-string v1, "this.test()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.a -> sample.a:
+                    sample.b a() -> test
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun withExplicitIt() {
+        val cls = """
+        .class public final Lsample/a;
+        .super Ljava/lang/Object;
+
+        .method public test()V
+            .locals 2
+            invoke-virtual {p0}, Lsample/a;->a()Lsample/b;
+            move-result-object v0
+            const-string v1, "it.test()"
+            invoke-static {v0, v1}, Lkotlin/jvm/internal/k;->a(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                sample.a -> sample.a:
+                    sample.b a() -> test
+            """.trimIndent()
         )
     }
 }
