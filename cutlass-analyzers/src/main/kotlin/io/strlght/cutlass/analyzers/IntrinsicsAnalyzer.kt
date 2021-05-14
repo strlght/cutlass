@@ -27,8 +27,23 @@ import java.util.EnumSet
 import java.util.Locale
 
 class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
+    /*
+        This regex is plain and simple but it doesn't really cover all possible cases.
+        Examples of expressions that won't match:
+            * Entity().method()
+            * BigInteger(130, SecureRandom()).toString(32)
+            * Entity.method1().method2()
+            * Observable.just(emptyList())
+
+        There are 2 solutions to this:
+            1. Parse entire intrinsic string argument with KotlinParser (or something similar)
+            2. Improve regex to cover these cases
+     */
     private val intrinsicRegex by lazy {
-        "^([a-zA-Z_][a-zA-Z0-9_]+(\\[\\d+])?\\.)?([a-zA-Z_][a-zA-Z0-9_]+)(!!)?(<[a-zA-Z_][a-zA-Z0-9_]+>)?(\\([^)]*\\))?$".toRegex()
+        ("^([a-zA-Z_][a-zA-Z0-9_]+(\\[\\d+])?\\.)?" + // entity
+            "([a-zA-Z_][a-zA-Z0-9_]+)(!!)?" + // method
+            "(<[a-zA-Z_][a-zA-Z0-9_]+>)?(\\([^)]*\\))?$" // params
+            ).toRegex()
     }
     private val candidates = mutableSetOf<Pair<String, String>>()
 
