@@ -2,12 +2,17 @@ package io.strlght.cutlass.core
 
 import io.strlght.cutlass.api.Finding
 import io.strlght.cutlass.api.FindingResolver
+import io.strlght.cutlass.api.ext.toCutlassModel
 import org.jf.dexlib2.iface.ClassDef
 
 class DefaultFindingResolver : FindingResolver {
     override fun resolve(classes: List<ClassDef>, findings: List<Finding>): List<Finding> {
         val result = findings.toMutableList()
-        val usedNames = classes.usedTypes
+
+        val classMap = classes.associateBy { it.type }
+        processOverridden(result, classMap)
+
+        val usedNames = classMap.keys
         val classNamesToKeep = result
             .asSequence()
             .filterIsInstance<Finding.ClassName>()
@@ -44,6 +49,57 @@ class DefaultFindingResolver : FindingResolver {
         return result
     }
 
-    private val List<ClassDef>.usedTypes: Set<String>
-        get() = asSequence().map { it.type }.toSet()
+    private fun processOverridden(result: MutableList<Finding>, classMap: Map<String, ClassDef>) {
+        result.asSequence()
+            .filter { it is Finding.MethodName || it is Finding.FieldName }
+            .forEach {
+                if (it is Finding.MethodName) {
+                    processOverriddenMethod(result, it, classMap)
+                } else if (it is Finding.FieldName) {
+                    processOverriddenField(result, it, classMap)
+                }
+            }
+    }
+
+    private fun processOverriddenMethod(
+        result: MutableList<Finding>,
+        finding: Finding.MethodName,
+        classMap: Map<String, ClassDef>
+    ) {
+        val root = finding.method.parent.value
+        val queue = mutableListOf(root)
+        while (queue.isNotEmpty()) {
+            val type = queue.removeFirst()
+            val classDef = classMap[type] ?: continue
+            val method = classDef.methods
+                .firstOrNull { it.toCutlassModel() == finding.method }
+                ?: continue
+            if (type != root) {
+                result.add(finding.copy(method = method.toCutlassModel()))
+            }
+            classDef.superclass?.also { queue.add(it) }
+            queue.addAll(classDef.interfaces)
+        }
+    }
+
+    private fun processOverriddenField(
+        result: MutableList<Finding>,
+        finding: Finding.FieldName,
+        classMap: Map<String, ClassDef>
+    ) {
+        val root = finding.field.parent.value
+        val queue = mutableListOf(root)
+        while (queue.isNotEmpty()) {
+            val type = queue.removeFirst()
+            val classDef = classMap[type] ?: continue
+            val field = classDef.fields
+                .firstOrNull { it.toCutlassModel() == finding.field }
+                ?: continue
+            if (type != root) {
+                result.add(finding.copy(field = field.toCutlassModel()))
+            }
+            classDef.superclass?.also { queue.add(it) }
+            queue.addAll(classDef.interfaces)
+        }
+    }
 }
