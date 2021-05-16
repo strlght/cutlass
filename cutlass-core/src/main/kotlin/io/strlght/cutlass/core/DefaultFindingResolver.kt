@@ -66,20 +66,16 @@ class DefaultFindingResolver : FindingResolver {
         finding: Finding.MethodName,
         classMap: Map<String, ClassDef>
     ) {
-        val root = finding.method.parent.value
-        val queue = mutableListOf(root)
-        while (queue.isNotEmpty()) {
-            val type = queue.removeFirst()
-            val classDef = classMap[type] ?: continue
-            val method = classDef.methods
-                .firstOrNull { it.toCutlassModel() == finding.method }
-                ?: continue
-            if (type != root) {
-                result.add(finding.copy(method = method.toCutlassModel()))
-            }
-            classDef.superclass?.also { queue.add(it) }
-            queue.addAll(classDef.interfaces)
-        }
+        processOverriddenMember(
+            classMap = classMap,
+            root = finding.method.parent.value,
+            firstMatchingMember = { classDef ->
+                classDef.methods.firstOrNull { it.toCutlassModel() == finding.method }
+            },
+            onFound = {
+                result.add(finding.copy(method = it.toCutlassModel()))
+            },
+        )
     }
 
     private fun processOverriddenField(
@@ -87,16 +83,31 @@ class DefaultFindingResolver : FindingResolver {
         finding: Finding.FieldName,
         classMap: Map<String, ClassDef>
     ) {
-        val root = finding.field.parent.value
+        processOverriddenMember(
+            classMap = classMap,
+            root = finding.field.parent.value,
+            firstMatchingMember = { classDef ->
+                classDef.fields.firstOrNull { it.toCutlassModel() == finding.field }
+            },
+            onFound = {
+                result.add(finding.copy(field = it.toCutlassModel()))
+            },
+        )
+    }
+
+    private inline fun <reified T> processOverriddenMember(
+        classMap: Map<String, ClassDef>,
+        root: String,
+        crossinline firstMatchingMember: (ClassDef) -> T?,
+        crossinline onFound: (T) -> Unit,
+    ) {
         val queue = mutableListOf(root)
         while (queue.isNotEmpty()) {
             val type = queue.removeFirst()
             val classDef = classMap[type] ?: continue
-            val field = classDef.fields
-                .firstOrNull { it.toCutlassModel() == finding.field }
-                ?: continue
+            val member = firstMatchingMember(classDef) ?: continue
             if (type != root) {
-                result.add(finding.copy(field = field.toCutlassModel()))
+                onFound(member)
             }
             classDef.superclass?.also { queue.add(it) }
             queue.addAll(classDef.interfaces)
