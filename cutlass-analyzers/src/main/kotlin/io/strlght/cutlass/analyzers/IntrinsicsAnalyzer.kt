@@ -150,7 +150,7 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
         if (reference is MethodReference) {
             val reportedName = convertToFunctionName(isFunction, methodName)
             if (reportedName != reference.name) {
-                context.report(Finding.MethodName(reference.toCutlassModel(), methodName))
+                context.report(Finding.MethodName(reference.toCutlassModel(), reportedName))
             }
         }
     }
