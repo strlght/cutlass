@@ -2,7 +2,6 @@ package io.strlght.cutlass.cli.commands
 
 import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.types.path
 import java.io.PrintStream
 import java.nio.file.Paths
@@ -31,7 +30,7 @@ internal class ProcessCommand(output: PrintStream, err: PrintStream) :
         canBeFile = true,
         canBeDir = false,
         mustBeReadable = true
-    ).required()
+    )
 
     override fun run() {
         runPipeline(

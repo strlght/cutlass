@@ -5,7 +5,7 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-fun <T> ExecutorService.async(block: () -> T): CompletableFuture<T> =
+inline fun <T> ExecutorService.async(crossinline block: () -> T): CompletableFuture<T> =
     CompletableFuture.supplyAsync({ block() }, this)
 
 fun <T> List<CompletableFuture<T>>.await(): List<T> =
