@@ -44,8 +44,8 @@ class FieldNamesMetadataProcessorTest {
             km,
             mapping = """
                 KmFieldsBasic -> KmFieldsBasic:
-                    int b -> intField
                     float a -> floatField
+                    int b -> intField
             """.trimIndent()
         )
     }
