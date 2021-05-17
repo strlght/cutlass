@@ -91,15 +91,19 @@ class DefaultTypeMapping : TypeMapping {
         classMapping
             .asSequence()
             .filter { (_, value) -> !value.isEmpty() }
+            .sortedBy { it.key }
             .forEach { (key, value) ->
                 typeMappingVisitor.visitType(key, value.newType)
                 value.fieldMapping
+                    .asSequence()
+                    .sortedBy { it.key.name }
                     .forEach { (field, mapping) ->
                         typeMappingVisitor.visitField(field, mapping.name)
                     }
                 value.methodMapping
                     .asSequence()
                     .filter { (_, mapping) -> mapping.name != null }
+                    .sortedBy { it.key.name }
                     .forEach { (method, mapping) ->
                         typeMappingVisitor.visitMethod(method, mapping)
                     }
