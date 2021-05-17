@@ -125,6 +125,7 @@ class IntrinsicsParametersAnalyzer(context: AnalyzerContext) : Analyzer(context)
             .reference
             .cast<StringReference>()
             .string
+
         if (parameterName.matches(nameRegex)) {
             context.report(
                 Finding.ParameterName(
@@ -133,6 +134,18 @@ class IntrinsicsParametersAnalyzer(context: AnalyzerContext) : Analyzer(context)
                     parameterName
                 )
             )
+        } else if (index == 0 &&
+            parameterName.startsWith(INTRINSICS_EXTENSION_PREFIX)
+        ) {
+            val newName = parameterName.removePrefix(INTRINSICS_EXTENSION_PREFIX)
+            if (newName != method.name) {
+                context.report(
+                    Finding.MethodName(
+                        method.toCutlassModel(),
+                        parameterName.removePrefix(INTRINSICS_EXTENSION_PREFIX),
+                    )
+                )
+            }
         }
     }
 
@@ -155,5 +168,7 @@ class IntrinsicsParametersAnalyzer(context: AnalyzerContext) : Analyzer(context)
             "Ljava/lang/String;"
         )
         private const val EXPECTED_RETURN_TYPE = "V"
+
+        private const val INTRINSICS_EXTENSION_PREFIX = "\$this\$"
     }
 }
