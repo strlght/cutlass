@@ -87,6 +87,12 @@ class DefaultFindingResolver : FindingResolver {
             }
 
             processed.add(type)
+            val childTypes = childTypesMap[type] ?: continue
+            queue.addAll(childTypes)
+
+            if (type == startingClass) {
+                continue
+            }
 
             val classDef = classMap[type] ?: continue
             classDef.methods
@@ -97,14 +103,9 @@ class DefaultFindingResolver : FindingResolver {
                         model.returnType == finding.method.returnType
                 }
                 ?.also {
-                    if (startingClass != it.definingClass) {
-                        result.add(finding.copy(method = it.toCutlassModel())
-                            .apply { source = FINDING_SOURCE })
-                    }
+                    result.add(finding.copy(method = it.toCutlassModel())
+                        .apply { source = FINDING_SOURCE })
                 }
-
-            val childTypes = childTypesMap[type] ?: continue
-            queue.addAll(childTypes)
         }
     }
 
