@@ -17,7 +17,7 @@ import org.jf.dexlib2.iface.reference.StringReference
 import org.jf.dexlib2.util.InstructionUtil
 
 @ExperimentalAnalyzer
-class IntrinsicsParametersAnalyzer(context: AnalyzerContext) : Analyzer(context) {
+class IntrinsicsPrologueAnalyzer(context: AnalyzerContext) : Analyzer(context) {
     private val nameRegex by lazy { "[a-zA-Z_][a-zA-Z0-9_]*".toRegex() }
 
     private var state: State = State.Preparing

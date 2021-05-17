@@ -5,7 +5,7 @@ import io.strlght.cutlass.test.assert
 import io.strlght.cutlass.test.toSmaliClassDef
 import org.junit.Test
 
-class IntrinsicsParametersAnalyzerTest {
+class IntrinsicsPrologueAnalyzerTest {
     private val intrinsicsClassDef = """
         .class public Lkotlin/jvm/internal/k;
         .super Ljava/lang/Object;
@@ -145,7 +145,7 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = "IntrinsicsBasic -> IntrinsicsBasic:"
@@ -166,7 +166,7 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = """
@@ -190,7 +190,7 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
@@ -214,7 +214,7 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
