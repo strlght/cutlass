@@ -1,4 +1,4 @@
-package io.strlght.cutlass.core
+package io.strlght.cutlass.core.resolve
 
 import io.strlght.cutlass.api.Finding
 import io.strlght.cutlass.api.FindingResolver
@@ -44,7 +44,7 @@ class DefaultFindingResolver : FindingResolver {
         result.removeAll { it is Finding.ClassName && it !in classNamesToKeep }
 
         @Suppress("UnusedPrivateMember")
-        val invalidReports = result.filter { !it.type.isClass }
+        val invalidReports = result.filter { !FindingValidator.isValid(it) }
 
         return result
     }
