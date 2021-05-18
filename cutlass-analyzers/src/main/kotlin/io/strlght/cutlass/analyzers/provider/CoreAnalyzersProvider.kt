@@ -3,7 +3,7 @@ package io.strlght.cutlass.analyzers.provider
 import io.strlght.cutlass.analyzers.EnumStaticInitAnalyzer
 import io.strlght.cutlass.analyzers.FieldAnnotationAnalyzer
 import io.strlght.cutlass.analyzers.IntrinsicsAnalyzer
-import io.strlght.cutlass.analyzers.IntrinsicsParametersAnalyzer
+import io.strlght.cutlass.analyzers.IntrinsicsPrologueAnalyzer
 import io.strlght.cutlass.analyzers.KotlinMetadataAnalyzer
 import io.strlght.cutlass.analyzers.SourceMetadataAnalyzer
 import io.strlght.cutlass.analyzers.ToStringAnalyzer
@@ -16,7 +16,7 @@ class CoreAnalyzersProvider : AnalyzersProvider {
         listOf(
             EnumStaticInitAnalyzer(contextProvider()),
             FieldAnnotationAnalyzer(contextProvider()),
-            IntrinsicsParametersAnalyzer(contextProvider()),
+            IntrinsicsPrologueAnalyzer(contextProvider()),
             IntrinsicsAnalyzer(contextProvider()),
             KotlinMetadataAnalyzer(contextProvider()),
             SourceMetadataAnalyzer(contextProvider()),

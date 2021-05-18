@@ -5,7 +5,7 @@ import io.strlght.cutlass.test.assert
 import io.strlght.cutlass.test.toSmaliClassDef
 import org.junit.Test
 
-class IntrinsicsParametersAnalyzerTest {
+class IntrinsicsPrologueAnalyzerTest {
     private val intrinsicsClassDef = """
         .class public Lkotlin/jvm/internal/k;
         .super Ljava/lang/Object;
@@ -130,7 +130,7 @@ class IntrinsicsParametersAnalyzerTest {
     """.trimIndent().toSmaliClassDef()
 
     @Test
-    fun basic() {
+    fun basicParameter() {
         val cls = """
         .class public final LIntrinsicsBasic;
         .super Ljava/lang/Object;
@@ -145,10 +145,55 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = "IntrinsicsBasic -> IntrinsicsBasic:"
+        )
+    }
+
+    @Test
+    fun basicMethod() {
+        val cls = """
+        .class public final LIntrinsicsBasicExt;
+        .super Ljava/lang/Object;
+
+        # direct methods
+        .method public a(LIntrinsicsBasic;)V
+            .locals 1
+            const-string v0, "${"$"}this${"$"}test"
+            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = """
+                IntrinsicsBasicExt -> IntrinsicsBasicExt:
+                    void a(IntrinsicsBasic) -> test
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun sameNameMethod() {
+        val cls = """
+        .class public final LIntrinsicsBasicExt;
+        .super Ljava/lang/Object;
+
+        # direct methods
+        .method public test(LIntrinsicsBasic;)V
+            .locals 1
+            const-string v0, "${"$"}this${"$"}test"
+            invoke-static {p1, v0}, Lkotlin/jvm/internal/k;->e(Ljava/lang/Object;Ljava/lang/String;)V
+        .end method
+        """.trimIndent().toSmaliClassDef()
+
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
+            cls,
+            intrinsicsClassDef,
+            mapping = ""
         )
     }
 
@@ -169,7 +214,7 @@ class IntrinsicsParametersAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsParametersAnalyzer(context = DefaultAnalyzerContext()).assert(
+        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
