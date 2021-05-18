@@ -1,11 +1,16 @@
 package io.strlght.cutlass.analyzers
 
 import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
 import io.strlght.cutlass.test.toSmaliClassDef
+import org.junit.Rule
 import org.junit.Test
 
 class IntrinsicsAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(IntrinsicsAnalyzer::class.java)
+
     private val intrinsicsClassDef = """
         .class public Lkotlin/jvm/internal/k;
         .super Ljava/lang/Object;
@@ -54,7 +59,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = """
@@ -80,7 +85,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = """
@@ -106,7 +111,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = """
@@ -131,7 +136,7 @@ class IntrinsicsAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = ""

@@ -1,13 +1,17 @@
 package io.strlght.cutlass.analyzers
 
-import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
+import org.junit.Rule
 import org.junit.Test
 
 class EnumStaticInitAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(EnumStaticInitAnalyzer::class.java)
+
     @Test
     fun basic() {
-        EnumStaticInitAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final enum LEnumStaticInitBasic;
             .super Ljava/lang/Enum;
@@ -96,7 +100,7 @@ class EnumStaticInitAnalyzerTest {
 
     @Test
     fun doesntReportSameName() {
-        EnumStaticInitAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final enum LEnumStaticInitSameName;
             .super Ljava/lang/Enum;

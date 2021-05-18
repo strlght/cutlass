@@ -1,13 +1,17 @@
 package io.strlght.cutlass.analyzers
 
-import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
+import org.junit.Rule
 import org.junit.Test
 
 class SourceMetadataAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(SourceMetadataAnalyzer::class.java)
+
     @Test
     fun reportsNameForBasicClass() {
-        SourceMetadataAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final Lsample/a;
             .super Ljava/lang/Object;
@@ -21,7 +25,7 @@ class SourceMetadataAnalyzerTest {
 
     @Test
     fun doesntReportNameForBasicClassWithMissingSourceFile() {
-        SourceMetadataAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final Lsample/a;
             .super Ljava/lang/Object;
@@ -32,7 +36,7 @@ class SourceMetadataAnalyzerTest {
 
     @Test
     fun reportsCorrectNameForInnerClasses() {
-        SourceMetadataAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final Lsample/a${'$'}a;
             .super Ljava/lang/Object;
@@ -44,7 +48,7 @@ class SourceMetadataAnalyzerTest {
 
     @Test
     fun enclosingAnnotation() {
-        SourceMetadataAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public interface abstract La;
             .super Ljava/lang/Object;
@@ -61,7 +65,7 @@ class SourceMetadataAnalyzerTest {
 
     @Test
     fun synthetic() {
-        SourceMetadataAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class synthetic abstract La;
             .super Ljava/lang/Object;
