@@ -4,8 +4,9 @@ import io.strlght.cutlass.api.Finding
 
 class FindingValidator {
     companion object {
+        private const val IDENTIFIER = "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
         private val VALID_CLASSNAME_REGEX by lazy {
-            "L(\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*/)*\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*;".toRegex()
+            "L($IDENTIFIER/)*$IDENTIFIER;".toRegex()
         }
 
         fun isValid(finding: Finding): Boolean {
