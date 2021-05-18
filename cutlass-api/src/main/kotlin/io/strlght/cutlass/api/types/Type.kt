@@ -21,7 +21,6 @@ value class Type(val value: String) : Comparable<Type> {
             }
 
     val isClass get() = arrayArity == 0 && value.startsWith("L")
-    val isValid get() = !value.contains(' ')
 
     fun replaceClassName(new: String): Type {
         val pkg = TypeUtils.getPackage(value)
