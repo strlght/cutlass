@@ -2,6 +2,7 @@ dependencies {
     api projects.cutlassApi
     api libs.kotlin.metadata
     implementation projects.cutlassUtils
+    implementation libs.kotlinx.ast
     testImplementation projects.cutlassTest
     testImplementation projects.cutlassReportTxt
     testImplementation libs.kotlin.reflect

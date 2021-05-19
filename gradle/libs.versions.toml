@@ -14,6 +14,7 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 kotlin-metadata = "org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.2.0"
 detekt-ktlint = "io.gitlab.arturbosch.detekt:detekt-formatting:1.16.0"
 proguard = "com.guardsquare:proguard-gradle:7.1.0-beta3"
+kotlinx-ast = "com.github.kotlinx.ast:grammar-kotlin-parser-antlr-kotlin:bdca0630aa"
 
 [bundles]
 testDependencies = ["junit", "assertk"]

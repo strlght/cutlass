@@ -7,6 +7,10 @@ import io.strlght.cutlass.api.Finding
 import io.strlght.cutlass.api.ext.toCutlassModel
 import io.strlght.cutlass.api.types.Type
 import io.strlght.cutlass.utils.ext.cast
+import kotlinx.ast.common.AstSource
+import kotlinx.ast.common.flatten
+import kotlinx.ast.common.flattenTerminal
+import kotlinx.ast.grammar.kotlin.target.antlr.kotlin.KotlinGrammarAntlrKotlinParser
 import org.jf.dexlib2.AccessFlags
 import org.jf.dexlib2.Opcode
 import org.jf.dexlib2.ReferenceType
@@ -116,6 +120,18 @@ class IntrinsicsAnalyzer(context: AnalyzerContext) : Analyzer(context) {
 
     @Suppress("MagicNumber")
     private fun processResult(stringValue: String, valueInstruction: ReferenceInstruction) {
+        val expression = KotlinGrammarAntlrKotlinParser
+            .runCatching {
+                parseKotlinFile(
+                    AstSource.String(
+                        "",
+                        "fun test() { ${stringValue.replace("(...)", "")} }"
+                    )
+                )
+            }
+            .getOrNull()
+            ?.flatten("statements")
+            ?.flattenTerminal()
         val result = intrinsicRegex.matchEntire(
             stringValue
         ) ?: return
