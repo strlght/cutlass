@@ -4,9 +4,11 @@ import io.strlght.cutlass.api.Finding
 
 class FindingValidator {
     companion object {
-        private const val IDENTIFIER = "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*"
+        private val IDENTIFIER_REGEX by lazy {
+            "[a-zA-Z0-9_$-]+".toRegex()
+        }
         private val VALID_CLASSNAME_REGEX by lazy {
-            "L($IDENTIFIER/)*$IDENTIFIER;".toRegex()
+            "L(${IDENTIFIER_REGEX.pattern}/)*${IDENTIFIER_REGEX.pattern};".toRegex()
         }
 
         fun isValid(finding: Finding): Boolean {
@@ -25,12 +27,12 @@ class FindingValidator {
             finding.newType.let { it.isClass && VALID_CLASSNAME_REGEX.matches(it.value) }
 
         private fun validateField(finding: Finding.FieldName): Boolean =
-            true
+            IDENTIFIER_REGEX.matches(finding.newName)
 
         private fun validateMethod(finding: Finding.MethodName): Boolean =
-            true
+            IDENTIFIER_REGEX.matches(finding.newName)
 
         private fun validateParameter(finding: Finding.ParameterName): Boolean =
-            true
+            IDENTIFIER_REGEX.matches(finding.parameterName)
     }
 }
