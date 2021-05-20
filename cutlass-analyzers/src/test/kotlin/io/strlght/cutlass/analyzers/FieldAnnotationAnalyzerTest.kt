@@ -1,13 +1,17 @@
 package io.strlght.cutlass.analyzers
 
-import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
+import org.junit.Rule
 import org.junit.Test
 
 class FieldAnnotationAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(FieldAnnotationAnalyzer::class.java)
+
     @Test
     fun basic() {
-        FieldAnnotationAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LFieldAnnotationBasic;
             .super Ljava/lang/Object;
@@ -35,7 +39,7 @@ class FieldAnnotationAnalyzerTest {
 
     @Test
     fun empty() {
-        FieldAnnotationAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LFieldAnnotationEmpty;
             .super Ljava/lang/Object;
@@ -55,7 +59,7 @@ class FieldAnnotationAnalyzerTest {
 
     @Test
     fun sameName() {
-        FieldAnnotationAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LFieldAnnotationSameName;
             .super Ljava/lang/Object;
@@ -73,7 +77,7 @@ class FieldAnnotationAnalyzerTest {
 
     @Test
     fun missing() {
-        FieldAnnotationAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LFieldAnnotationMissing;
             .super Ljava/lang/Object;

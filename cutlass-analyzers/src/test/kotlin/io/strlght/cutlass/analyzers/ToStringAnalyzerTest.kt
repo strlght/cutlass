@@ -1,13 +1,17 @@
 package io.strlght.cutlass.analyzers
 
-import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
+import org.junit.Rule
 import org.junit.Test
 
 class ToStringAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(ToStringAnalyzer::class.java)
+
     @Test
     fun basic() {
-        ToStringAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LToStringBasicTest;
             .super Ljava/lang/Object;
@@ -47,7 +51,7 @@ class ToStringAnalyzerTest {
 
     @Test
     fun className() {
-        ToStringAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final La;
             .super Ljava/lang/Object;
@@ -86,7 +90,7 @@ class ToStringAnalyzerTest {
 
     @Test
     fun dummyToStringBody() {
-        ToStringAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             """
             .class public final LToStringEmpty;
             .super Ljava/lang/Object;

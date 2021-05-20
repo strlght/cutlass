@@ -1,11 +1,16 @@
 package io.strlght.cutlass.analyzers
 
 import io.strlght.cutlass.api.DefaultAnalyzerContext
+import io.strlght.cutlass.test.AnalyzerRule
 import io.strlght.cutlass.test.assert
 import io.strlght.cutlass.test.toSmaliClassDef
+import org.junit.Rule
 import org.junit.Test
 
 class IntrinsicsPrologueAnalyzerTest {
+    @get:Rule
+    val analyzerRule = AnalyzerRule(IntrinsicsPrologueAnalyzer::class.java)
+
     private val intrinsicsClassDef = """
         .class public Lkotlin/jvm/internal/k;
         .super Ljava/lang/Object;
@@ -166,7 +171,7 @@ class IntrinsicsPrologueAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = """
@@ -190,7 +195,7 @@ class IntrinsicsPrologueAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
@@ -214,7 +219,7 @@ class IntrinsicsPrologueAnalyzerTest {
         .end method
         """.trimIndent().toSmaliClassDef()
 
-        IntrinsicsPrologueAnalyzer(context = DefaultAnalyzerContext()).assert(
+        analyzerRule.analyzer.assert(
             cls,
             intrinsicsClassDef,
             mapping = ""
