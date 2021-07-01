@@ -20,7 +20,7 @@ import org.jf.dexlib2.iface.reference.StringReference
 import java.util.EnumSet
 
 class ToStringAnalyzer(context: AnalyzerContext) : Analyzer(context) {
-    private val classNameRegex by lazy { "([a-zA-Z0-9_]+.?[a-zA-Z0-9_]+)\\s*[{(\\[]".toRegex() }
+    private val classNameRegex by lazy { "([a-zA-Z0-9_]+\\.?[a-zA-Z0-9_]+)\\s*[{(\\[]".toRegex() }
     private val nameRegex by lazy { "([a-zA-Z_][a-zA-Z0-9_]*)(\\s*[=:]\\s*)".toRegex() }
 
     private fun extractPossibleNames(value: String): Pair<String?, String> {

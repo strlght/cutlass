@@ -9,6 +9,7 @@ import io.strlght.cutlass.api.metrics.perormance.Stage
 import io.strlght.cutlass.core.analysis.AnalyzerRunner
 import io.strlght.cutlass.core.analysis.DefaultAnalyzerRunner
 import io.strlght.cutlass.core.config.Config
+import io.strlght.cutlass.core.resolve.DefaultFindingResolver
 import io.strlght.cutlass.core.result.CutlassResult
 import io.strlght.cutlass.core.utils.concurrent.RewriteExecutorService
 import io.strlght.cutlass.core.utils.concurrent.async

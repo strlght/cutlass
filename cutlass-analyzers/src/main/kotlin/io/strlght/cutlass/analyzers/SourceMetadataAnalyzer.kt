@@ -11,6 +11,7 @@ import org.jf.dexlib2.AccessFlags
 import org.jf.dexlib2.iface.ClassDef
 
 class SourceMetadataAnalyzer(context: AnalyzerContext) : Analyzer(context) {
+    private val nameRegex by lazy { "\\p{javaJavaIdentifierStart}\\p{javaJavaIdentifierPart}*".toRegex() }
     private val namesMap = mutableMapOf<Type, Int>()
 
     private fun extractType(classDef: ClassDef): Type? {
@@ -23,6 +24,7 @@ class SourceMetadataAnalyzer(context: AnalyzerContext) : Analyzer(context) {
             ?.sourceFile
             ?.takeIf(::isValidSource)
             ?.substringBefore(".")
+            ?.let { nameRegex.find(it)?.value }
             ?.takeIf { isValidClassName(type, it) }
             ?.let { type.replaceClassName(it) }
     }
@@ -46,8 +48,8 @@ class SourceMetadataAnalyzer(context: AnalyzerContext) : Analyzer(context) {
 
     private fun isValidClassName(type: Type, source: String): Boolean {
         val className = type.simpleName
-        return !className.contains("$") &&
+        return !type.isInner &&
             className != source &&
-            source.length > className.length
+            source.length >= className.length
     }
 }
