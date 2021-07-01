@@ -48,7 +48,7 @@ class SourceMetadataAnalyzer(context: AnalyzerContext) : Analyzer(context) {
 
     private fun isValidClassName(type: Type, source: String): Boolean {
         val className = type.simpleName
-        return !className.contains("$") &&
+        return !type.isInner &&
             className != source &&
             source.length >= className.length
     }

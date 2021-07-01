@@ -11,6 +11,8 @@ value class Type(val value: String) : Comparable<Type> {
             .substring(1, value.length - 1)
             .substringAfterLast('/')
 
+    val isInner get() = simpleName.contains('$')
+
     private val arrayArity get() = value.indexOfFirst { it != '[' }
     val rootType
         get() =
